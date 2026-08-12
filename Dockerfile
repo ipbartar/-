@@ -1,11 +1,11 @@
-# استفاده از تصویر PHP با Apache (نسخه بهینه و پایدار برای Debian 13)
+# استفاده از تصویر PHP با Apache
 FROM php:8.2-apache
 
 # تنظیم timezone و locale
 ENV TZ=Asia/Tehran \
     DEBIAN_FRONTEND=noninteractive
 
-# نصب وابستگی‌های سیستم (با اضافه کردن libcurl برای curl + libpng-dev برای GD)
+# نصب وابستگی‌های سیستم
 RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-server \
     mariadb-client \
@@ -19,8 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     openssh-server \
     libzip-dev \
-    libcurl4-openssl-dev \
     libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
     ca-certificates \
     tzdata \
     && rm -rf /var/lib/apt/lists/*
@@ -51,7 +54,7 @@ RUN mkdir -p /var/www/html/mirzaprobotconfig && \
     mkdir -p /var/log/supervisor && \
     mkdir -p /run/mysqld
 
-# تنظیم مجوزهای دایکتوری
+# تنظیم مجوزهای دایرکتوری
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html && \
     chown -R mysql:mysql /var/lib/mysql && \
