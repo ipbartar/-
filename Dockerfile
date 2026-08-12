@@ -1,11 +1,11 @@
-# استفاده از تصویر PHP با Apache
+# استفاده از تصویر PHP با Apache (نسخه بهینه و پایدار)
 FROM php:8.2-apache
 
 # تنظیم timezone و locale
 ENV TZ=Asia/Tehran \
     DEBIAN_FRONTEND=noninteractive
 
-# نصب وابستگی‌های سیستم
+# نصب وابستگی‌های سیستم (پکیج‌های قدیمی + extensions)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-server \
     mariadb-client \
@@ -19,14 +19,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     openssh-server \
     libzip-dev \
-    php8.4-mysql \
-    php8.4-curl \
-    php8.4-gd \
-    php8.4-mbstring \
-    php8.4-xml \
-    php8.4-json \
-    php8.4-bcmath \
-    php8.4-intl \
+    php-mysql \
+    php-curl \
+    php-gd \
+    php-mbstring \
+    php-xml \
+    php-json \
+    php-bcmath \
+    php-intl \
     ca-certificates \
     tzdata \
     && rm -rf /var/lib/apt/lists/*
