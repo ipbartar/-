@@ -1,11 +1,11 @@
-# استفاده از تصویر PHP با Apache (نسخه بهینه و پایدار)
+# استفاده از تصویر PHP با Apache (نسخه بهینه برای Debian 13 / Trixie)
 FROM php:8.2-apache
 
 # تنظیم timezone و locale
 ENV TZ=Asia/Tehran \
     DEBIAN_FRONTEND=noninteractive
 
-# نصب وابستگی‌های سیستم (پکیج‌های قدیمی + extensions)
+# نصب وابستگی‌های سیستم (با پکیج‌های مناسب Debian 13)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-server \
     mariadb-client \
