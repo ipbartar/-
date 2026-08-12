@@ -5,7 +5,7 @@ FROM php:8.2-apache
 ENV TZ=Asia/Tehran \
     DEBIAN_FRONTEND=noninteractive
 
-# نصب وابستگی‌های سیستم (بدون پکیج‌های قدیمی PHP)
+# نصب وابستگی‌های سیستم (با اضافه کردن libcurl برای curl + libpng-dev برای GD)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-server \
     mariadb-client \
@@ -19,26 +19,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     openssh-server \
     libzip-dev \
+    libcurl4-openssl-dev \
+    libpng-dev \
     ca-certificates \
     tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-# نصب و فعال کردن PHP Extensions (با اضافه کردن libpng-dev برای GD)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpng-dev \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        mysqli \
-        zip \
-        gd \
-        curl \
-        mbstring \
-        xml \
-        json \
-        bcmath \
-        intl \
-    && rm -rf /var/lib/apt/lists/*
+# نصب و فعال کردن PHP Extensions
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mysqli \
+    zip \
+    gd \
+    curl \
+    mbstring \
+    xml \
+    json \
+    bcmath \
+    intl
 
 # فعال کردن mod_rewrite برای Apache
 RUN a2enmod rewrite && \
@@ -52,7 +51,7 @@ RUN mkdir -p /var/www/html/mirzaprobotconfig && \
     mkdir -p /var/log/supervisor && \
     mkdir -p /run/mysqld
 
-# تنظیم مجوزهای دایرکتوری
+# تنظیم مجوزهای دایکتوری
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html && \
     chown -R mysql:mysql /var/lib/mysql && \
