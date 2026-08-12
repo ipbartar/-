@@ -23,19 +23,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-# نصب و فعال کردن PHP Extensions (با docker-php-ext-install — بدون نصب پکیج قدیمی)
-RUN docker-php-ext-install \
-    pdo \
-    pdo_mysql \
-    mysqli \
-    zip \
-    gd \
-    curl \
-    mbstring \
-    xml \
-    json \
-    bcmath \
-    intl
+# نصب و فعال کردن PHP Extensions (با اضافه کردن libpng-dev برای GD)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpng-dev \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        mysqli \
+        zip \
+        gd \
+        curl \
+        mbstring \
+        xml \
+        json \
+        bcmath \
+        intl \
+    && rm -rf /var/lib/apt/lists/*
 
 # فعال کردن mod_rewrite برای Apache
 RUN a2enmod rewrite && \
