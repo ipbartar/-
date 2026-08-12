@@ -1,11 +1,11 @@
-# استفاده از تصویر PHP با Apache (نسخه بهینه برای Debian 13 / Trixie)
+# استفاده از تصویر PHP با Apache (نسخه بهینه و پایدار برای Debian 13)
 FROM php:8.2-apache
 
 # تنظیم timezone و locale
 ENV TZ=Asia/Tehran \
     DEBIAN_FRONTEND=noninteractive
 
-# نصب وابستگی‌های سیستم (با پکیج‌های مناسب Debian 13)
+# نصب وابستگی‌های سیستم (بدون پکیج‌های قدیمی PHP)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-server \
     mariadb-client \
@@ -19,19 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     openssh-server \
     libzip-dev \
-    php-mysql \
-    php-curl \
-    php-gd \
-    php-mbstring \
-    php-xml \
-    php-json \
-    php-bcmath \
-    php-intl \
     ca-certificates \
     tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-# نصب و فعال کردن PHP Extensions
+# نصب و فعال کردن PHP Extensions (با docker-php-ext-install — بدون نصب پکیج قدیمی)
 RUN docker-php-ext-install \
     pdo \
     pdo_mysql \
