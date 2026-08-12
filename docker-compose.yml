@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # سرویس اصلی Mirza Pro
+  mirza-pro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mirza-pro-railway
+    
+    # درگاه‌های آزاد‌شده
+    ports:
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS (اختیاری)
+      - "3306:3306"  # MySQL (فقط برای توسعه)
+    
+    # متغیرهای محیط‌ایی (ENVIRONMENT VARIABLES)
+    environment:
+      # اطلاعات ربات تلگرام
+      BOT_TOKEN: "YOUR_BOT_TOKEN_HERE"          # ✅ جایگزین کنید
+      BOT_USERNAME: "your_bot_username"         # ✅ جایگزین کنید
+      ADMIN_ID: "123456789"                     # ✅ جایگزین کنید
+
+      # اطلاعات دیتابیس
+      DB_NAME: "mirzaprobot"
+      DB_USER: "root"
+      DB_PASSWORD: "mirzapro_secure_2024"
+      
+      # تنظیمات دامنه و Webhook (خودکار از Railway)
+      # ⚠️ در Railway: RAILWAY_PUBLIC_DOMAIN خودکار تنظیم می‌شود
+      # در docker-compose محلی: دستی بگذارید
+      RAILWAY_PUBLIC_DOMAIN: "localhost:80"
+      BOT_DOMAIN: "localhost"  # بیشتر مراقبت‌ها: استفاده نکنید
+      WEBHOOK_URL: ""          # خودکار تشخیص داده می‌شود
+      WEBHOOK_SECRET: "your_secure_webhook_secret_change_me"
+      
+      # تنظیمات پنل (یکی را انتخاب کنید)
+      PANEL_TYPE: "marzban"                    # marzban, marzneshin, sanaei, alireza, s-ui, hiddify
+      PANEL_URL: "https://your-panel-url.com"
+      PANEL_USERNAME: "admin"
+      PANEL_PASSWORD: "your_panel_password"
+      
+      # تنظیمات درگاه پرداخت
+      PAYMENT_GATEWAY: "zarinpal"              # zarinpal, perfect_money, coinbase
+      ZARINPAL_MERCHANT: "your_zarinpal_merchant_id"
+      
+      # تنظیمات قیمت‌گذاری
+      MIN_PRICE: "1000"
+      MAX_PRICE: "1000000"
+      
+      # تنظیمات پیشرفته
+      DEBUG_MODE: "false"
+      LOG_LEVEL: "INFO"
+      TZ: "Asia/Tehran"
+
+    # Volume‌ها (ذخیره‌سازی داده‌ها)
+    volumes:
+      # داده‌های دیتابیس
+      - mysql_data:/var/lib/mysql
+      
+      # فایل‌های Bot
+      - ./mirza_pro:/var/www/html/mirzaprobotconfig
+      
+      # لاگ‌ها
+      - ./logs:/var/log/apache2
+      - ./logs/mysql:/var/log/mysql
+      - ./logs/supervisor:/var/log/supervisor
+      
+      # فایل‌های آپلود
+      - ./uploads:/var/www/html/mirzaprobotconfig/uploads
+      
+      # ذخیره‌سازی موقت
+      - ./storage:/var/www/html/mirzaprobotconfig/storage
+
+    # سیاست بازآغاز
+    restart: unless-stopped
+    
+    # تنظیمات شبکه
+    networks:
+      - mirza-network
+    
+    # health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # قاعده (اختیاری) - برای مقادیر پیش‌فرض
+  adminer:
+    image: adminer:latest
+    container_name: mirza-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: "mirza-pro"
+    networks:
+      - mirza-network
+    depends_on:
+      - mirza-pro
+    # حذف این بخش در Production
+
+# Volume‌های نام‌گذاری‌شده
+volumes:
+  mysql_data:
+    driver: local
+
+# شبکه مشترک
+networks:
+  mirza-network:
+    driver: bridge
